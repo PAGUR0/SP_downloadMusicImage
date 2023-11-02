@@ -35,14 +35,6 @@ public class Main {
 
         ExecutorService executor = Executors.newFixedThreadPool(2);
 
-        // Запуск задач в многопотоке
-        executor.execute(() -> {
-            try {
-                downloadImage(urlImage, strImage, "image");
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
         executor.execute(() -> {
             try {
                 downloadMusic(urlMusic, strMusic, "music");
@@ -50,12 +42,19 @@ public class Main {
                 throw new RuntimeException(e);
             }
         });
+        executor.execute(() -> {
+            try {
+                downloadImage(urlImage, strImage, "image");
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
 
-        // Завершение выполнения задач
         executor.shutdown();
     }
 
     public static void downloadImage(URL website, String str, String name) throws IOException{
+        System.out.println("Скачана картинка");
         ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 
         FileOutputStream fos = new FileOutputStream(str + name + ".jpg");
@@ -63,6 +62,7 @@ public class Main {
     }
 
     public static void downloadMusic(URL website, String str, String name) throws IOException{
+        System.out.println("Скачана песня");
         ReadableByteChannel rbc = Channels.newChannel(website.openStream());
 
         FileOutputStream fos = new FileOutputStream(str + name + ".mp3");
@@ -71,6 +71,7 @@ public class Main {
     }
 
     public static void playMusic(String str) {
+        System.out.println("Запущена песня");
         try (FileInputStream inputStream = new FileInputStream(str)) {
             try {
                 Player player = new Player(inputStream);
